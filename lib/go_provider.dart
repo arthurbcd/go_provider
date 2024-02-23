@@ -42,52 +42,17 @@ class ShellProviderRoute extends ShellRoute {
   /// See [ShellRoute] for more information.
   ShellProviderRoute({
     required this.providers,
-    required List<RouteBase> routes,
-    this.redirect,
+    required super.routes,
     super.navigatorKey,
     super.observers,
     super.parentNavigatorKey,
     super.restorationScopeId,
     super.builder,
     super.pageBuilder,
-  }) : super(routes: redirect == null ? routes : _routes(routes, redirect));
+  });
 
   /// A list of providers to be nested in the route.
   final List<SingleChildWidget> providers;
-
-  /// A [redirect] callback to be applied to all nested [routes].
-  ///
-  /// See [GoRouterRedirect] for more information.
-  final GoRouterRedirect? redirect;
-
-  /// A static method that adds [redirect] to nested routes.
-  static List<RouteBase> _routes(
-    List<RouteBase> routes,
-    GoRouterRedirect redirect,
-  ) {
-    return routes.map((route) {
-      if (route is! GoRoute) return route;
-      return GoRoute(
-        path: route.path,
-        name: route.name,
-        builder: route.builder,
-        pageBuilder: route.pageBuilder,
-        parentNavigatorKey: route.parentNavigatorKey,
-        redirect: (context, state) {
-          final shellResult = redirect(context, state);
-
-          if (shellResult is String?) {
-            return shellResult ?? route.redirect?.call(context, state);
-          }
-          return shellResult.then((result) {
-            return result ?? route.redirect?.call(context, state);
-          });
-        },
-        onExit: route.onExit,
-        routes: route.routes,
-      );
-    }).toList();
-  }
 
   Widget _nest(ShellRouteContext shellRouteContext) {
     final navigator =

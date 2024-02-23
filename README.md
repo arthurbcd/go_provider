@@ -4,9 +4,8 @@ This package aim to provide a simple way to scope providers to a route in go_rou
 
 - Scope routes: access a provider in a route and it's sub-routes.
 - Auto dispose: the provider is disposed when the route is popped.
-- Guarded shell routes: the `redirect` property was added to guard shell routes.
 
-This package is compatible with `go_router` v10.0.0 and above. This package has 100 lines of code, you can copy and paste it in your project. Modify it to your needs.
+This package is compatible with `go_router` v10.0.0 and above. This package less than 100 lines of code, you can copy and paste it in your project. Modify it to your needs.
 
 ## The Problem
 
