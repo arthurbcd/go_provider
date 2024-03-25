@@ -55,9 +55,10 @@ class ShellProviderRoute extends ShellRoute {
   final List<SingleChildWidget> providers;
 
   Widget _nest(ShellRouteContext shellRouteContext) {
-    final navigator =
-        shellRouteContext.navigatorBuilder(observers, restorationScopeId);
-    return Nested(children: providers, child: navigator);
+    return Nested(
+      children: providers,
+      child: shellRouteContext.navigatorBuilder(observers, restorationScopeId),
+    );
   }
 
   @override

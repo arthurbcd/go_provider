@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+* Added example.
+* Updated README.md.
+* Bumped `flutter_lints` dev_dependency to 3.0.0.
+
 ## 1.1.0
 
 * Simplified `ShellProviderRoute` to make it less sensitive to future changes in `go_router`.
@@ -7,7 +13,7 @@
 
 ## 1.0.3
 
-* Change go_router constraints to '>=10.0.0 <14.0.0'.
+* Changed go_router constraints to '>=10.0.0 <14.0.0'.
 
 ## 1.0.2
 
@@ -16,7 +22,7 @@
 
 ## 1.0.1
 
-* Change go_router constraints to '>=10.0.0 <13.0.0'.
+* Changed go_router constraints to '>=10.0.0 <13.0.0'.
 
 ## 1.0.0
 
