@@ -1,6 +1,7 @@
 library go_provider;
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nested/nested.dart';
 
@@ -32,6 +33,88 @@ class GoProviderRoute extends ShellProviderRoute {
               routes: routes,
             ),
           ],
+          pageBuilder: pageBuilder != null
+              ? (context, state, child) {
+                  final page = pageBuilder(context, state);
+
+                  if (page is CupertinoPage) {
+                    return CupertinoPage(
+                      key: page.key,
+                      name: page.name,
+                      arguments: page.arguments,
+                      allowSnapshotting: page.allowSnapshotting,
+                      fullscreenDialog: page.fullscreenDialog,
+                      maintainState: page.maintainState,
+                      restorationId: page.restorationId,
+                      title: page.title,
+                      child: child,
+                    );
+                  }
+
+                  if (page is MaterialPage) {
+                    return MaterialPage(
+                      key: page.key,
+                      name: page.name,
+                      arguments: page.arguments,
+                      allowSnapshotting: page.allowSnapshotting,
+                      fullscreenDialog: page.fullscreenDialog,
+                      maintainState: page.maintainState,
+                      restorationId: page.restorationId,
+                      child: child,
+                    );
+                  }
+
+                  if (page is CustomTransitionPage) {
+                    return CustomTransitionPage(
+                      key: page.key,
+                      name: page.name,
+                      arguments: page.arguments,
+                      opaque: page.opaque,
+                      restorationId: page.restorationId,
+                      maintainState: page.maintainState,
+                      fullscreenDialog: page.fullscreenDialog,
+                      barrierDismissible: page.barrierDismissible,
+                      barrierColor: page.barrierColor,
+                      barrierLabel: page.barrierLabel,
+                      transitionsBuilder: page.transitionsBuilder,
+                      transitionDuration: page.transitionDuration,
+                      reverseTransitionDuration: page.reverseTransitionDuration,
+                      child: child,
+                    );
+                  }
+
+                  final route = page.createRoute(context);
+
+                  if (route is ModalRoute) {
+                    return CustomTransitionPage(
+                      key: page.key,
+                      name: page.name,
+                      arguments: page.arguments,
+                      restorationId: page.restorationId,
+                      opaque: route.opaque,
+                      fullscreenDialog:
+                          route is PageRoute && route.fullscreenDialog,
+                      barrierDismissible: route.barrierDismissible,
+                      barrierColor: route.barrierColor,
+                      barrierLabel: route.barrierLabel,
+                      maintainState: route.maintainState,
+                      transitionsBuilder: route.buildTransitions,
+                      transitionDuration: route.transitionDuration,
+                      reverseTransitionDuration:
+                          route.reverseTransitionDuration,
+                      child: child,
+                    );
+                  }
+
+                  return NoTransitionPage(
+                    key: page.key,
+                    arguments: page.arguments,
+                    name: page.name,
+                    restorationId: page.restorationId,
+                    child: child,
+                  );
+                }
+              : null,
         );
 }
 

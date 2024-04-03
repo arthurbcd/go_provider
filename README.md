@@ -79,6 +79,11 @@ routes: [
 ]
 ```
 
-## Nested
+## Issues
 
-- You can utilize any widget that extends `SingleChildWidget`, ensuring out-of-the-box compatibility with both `provider` and `flutter_bloc` packages.
+Since `GoProviderRoute` has its own `Navigator`, the canPop method will always return false. This means that the implicit back/close button wont show up. This a known issue when using `ShellRoute` routes:
+<https://github.com/flutter/flutter/issues/144687>
+
+## Contribution
+
+Contributions are welcome! Feel free to submit pull requests or open issues on our GitHub repository. Don't forget to star/like the project if you like it.
