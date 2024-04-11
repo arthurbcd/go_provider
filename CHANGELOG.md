@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.0
+
+- Fixed `GoProviderRoute` not being tracked in ancestor observers.
+- Added `GoPopButton` for leveraging `GoRouter`'s implicit pop.
+
+## 1.3.0
+
+- Added support to consuming declared providers directly in `ShellProviderRoute` builders in addition to it's routes.
+- Changed go_router constraints to '>=10.2.0 <14.0.0' for `onExit` full compability.
+
 ## 1.2.0
 
 - Added support to `GoProviderRoute` pageBuilder transitions.

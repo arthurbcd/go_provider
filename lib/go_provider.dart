@@ -35,86 +35,10 @@ class GoProviderRoute extends ShellProviderRoute {
           ],
           pageBuilder: pageBuilder != null
               ? (context, state, child) {
-                  final page = pageBuilder(context, state);
-
-                  if (page is CupertinoPage) {
-                    return CupertinoPage(
-                      key: page.key,
-                      name: page.name,
-                      arguments: page.arguments,
-                      allowSnapshotting: page.allowSnapshotting,
-                      fullscreenDialog: page.fullscreenDialog,
-                      maintainState: page.maintainState,
-                      restorationId: page.restorationId,
-                      title: page.title,
-                      child: child,
-                    );
-                  }
-
-                  if (page is MaterialPage) {
-                    return MaterialPage(
-                      key: page.key,
-                      name: page.name,
-                      arguments: page.arguments,
-                      allowSnapshotting: page.allowSnapshotting,
-                      fullscreenDialog: page.fullscreenDialog,
-                      maintainState: page.maintainState,
-                      restorationId: page.restorationId,
-                      child: child,
-                    );
-                  }
-
-                  if (page is CustomTransitionPage) {
-                    return CustomTransitionPage(
-                      key: page.key,
-                      name: page.name,
-                      arguments: page.arguments,
-                      opaque: page.opaque,
-                      restorationId: page.restorationId,
-                      maintainState: page.maintainState,
-                      fullscreenDialog: page.fullscreenDialog,
-                      barrierDismissible: page.barrierDismissible,
-                      barrierColor: page.barrierColor,
-                      barrierLabel: page.barrierLabel,
-                      transitionsBuilder: page.transitionsBuilder,
-                      transitionDuration: page.transitionDuration,
-                      reverseTransitionDuration: page.reverseTransitionDuration,
-                      child: child,
-                    );
-                  }
-
-                  final route = page.createRoute(context);
-
-                  if (route is ModalRoute) {
-                    return CustomTransitionPage(
-                      key: page.key,
-                      name: page.name,
-                      arguments: page.arguments,
-                      restorationId: page.restorationId,
-                      opaque: route.opaque,
-                      fullscreenDialog:
-                          route is PageRoute && route.fullscreenDialog,
-                      barrierDismissible: route.barrierDismissible,
-                      barrierColor: route.barrierColor,
-                      barrierLabel: route.barrierLabel,
-                      maintainState: route.maintainState,
-                      transitionsBuilder: route.buildTransitions,
-                      transitionDuration: route.transitionDuration,
-                      reverseTransitionDuration:
-                          route.reverseTransitionDuration,
-                      child: child,
-                    );
-                  }
-
-                  return NoTransitionPage(
-                    key: page.key,
-                    arguments: page.arguments,
-                    name: page.name,
-                    restorationId: page.restorationId,
-                    child: child,
-                  );
+                  return pageBuilder(context, state).nest((_) => child);
                 }
               : null,
+          observers: [_InheritObservers()],
         );
 }
 
@@ -137,21 +61,155 @@ class ShellProviderRoute extends ShellRoute {
   /// A list of providers to be nested in the route.
   final List<SingleChildWidget> providers;
 
-  Widget _nest(ShellRouteContext shellRouteContext) {
+  Widget _nest(Widget child) {
     return Nested(
       children: providers,
-      child: shellRouteContext.navigatorBuilder(observers, restorationScopeId),
+      child: child,
     );
   }
 
   @override
   Widget? buildWidget(context, state, shellRouteContext) {
-    if (builder == null && pageBuilder == null) return _nest(shellRouteContext);
-    return builder?.call(context, state, _nest(shellRouteContext));
+    if (pageBuilder != null) return null;
+
+    final widget = super.buildWidget(context, state, shellRouteContext);
+    if (widget != null) return _nest(widget);
+
+    return _nest(
+      shellRouteContext.navigatorBuilder(observers, restorationScopeId),
+    );
   }
 
   @override
   Page<dynamic>? buildPage(context, state, shellRouteContext) {
-    return pageBuilder?.call(context, state, _nest(shellRouteContext));
+    return super.buildPage(context, state, shellRouteContext)?.nest(_nest);
+  }
+}
+
+class _InheritObservers extends NavigatorObserver {
+  List<NavigatorObserver> get observers {
+    final state = navigator?.context.findAncestorStateOfType<NavigatorState>();
+    return state?.widget.observers ?? [];
+  }
+
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didPush(route, previousRoute);
+    }
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didPop(route, previousRoute);
+    }
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didRemove(route, previousRoute);
+    }
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    for (final observer in observers) {
+      observer.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    }
+  }
+
+  @override
+  void didStartUserGesture(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didStartUserGesture(route, previousRoute);
+    }
+  }
+
+  @override
+  void didStopUserGesture() {
+    for (final observer in observers) {
+      observer.didStopUserGesture();
+    }
+  }
+}
+
+extension on Page {
+  Page nest(Widget Function(Widget child) nester) {
+    final page = this;
+
+    if (page is CupertinoPage) {
+      return CupertinoPage(
+        key: page.key,
+        name: page.name,
+        arguments: page.arguments,
+        allowSnapshotting: page.allowSnapshotting,
+        fullscreenDialog: page.fullscreenDialog,
+        maintainState: page.maintainState,
+        restorationId: page.restorationId,
+        title: page.title,
+        child: nester(page.child),
+      );
+    }
+
+    if (page is MaterialPage) {
+      return MaterialPage(
+        key: page.key,
+        name: page.name,
+        arguments: page.arguments,
+        allowSnapshotting: page.allowSnapshotting,
+        fullscreenDialog: page.fullscreenDialog,
+        maintainState: page.maintainState,
+        restorationId: page.restorationId,
+        child: nester(page.child),
+      );
+    }
+
+    if (page is CustomTransitionPage) {
+      return CustomTransitionPage(
+        key: page.key,
+        name: page.name,
+        arguments: page.arguments,
+        opaque: page.opaque,
+        restorationId: page.restorationId,
+        maintainState: page.maintainState,
+        fullscreenDialog: page.fullscreenDialog,
+        barrierDismissible: page.barrierDismissible,
+        barrierColor: page.barrierColor,
+        barrierLabel: page.barrierLabel,
+        transitionsBuilder: page.transitionsBuilder,
+        transitionDuration: page.transitionDuration,
+        reverseTransitionDuration: page.reverseTransitionDuration,
+        child: nester(page.child),
+      );
+    }
+
+    throw GoError('Could not build page from route: $page'
+        ''
+        'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage.');
+  }
+}
+
+/// A button that returns either a [CloseButton] or a [BackButton] based on the
+/// current route's fullscreenDialog property.
+class GoPopButton extends StatelessWidget {
+  const GoPopButton({super.key, this.color, this.style, this.onPressed});
+
+  final Color? color;
+  final ButtonStyle? style;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final route = ModalRoute.of(context);
+    final useCloseButton = route is PageRoute && route.fullscreenDialog;
+    final actionButton = useCloseButton ? CloseButton.new : BackButton.new;
+
+    return actionButton(
+      color: color,
+      style: style,
+      onPressed: onPressed ?? context.pop,
+    );
   }
 }

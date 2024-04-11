@@ -84,6 +84,14 @@ routes: [
 Since `GoProviderRoute` has its own `Navigator`, the canPop method will always return false. This means that the implicit back/close button wont show up. This a known issue when using `ShellRoute` routes:
 <https://github.com/flutter/flutter/issues/144687>
 
+For leveraging `GoRouter`'s implicit pop issue, you can use `GoPopButton`:
+
+```dart
+GoPopButton(), // CloseButton/BackButton that pops the current route (like AppBar's leading)
+```
+
+> Also prefer using `context.pop` instead of `Navigator.pop` inside `GoProviderRoute` routes.
+
 ## Contribution
 
 Contributions are welcome! Feel free to submit pull requests or open issues on our GitHub repository. Don't forget to star/like the project if you like it.
