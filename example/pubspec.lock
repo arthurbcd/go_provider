@@ -66,10 +66,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_bloc
-      sha256: "87325da1ac757fcc4813e6b34ed5dd61169973871fdf181d6c2109dd6935ece1"
+      sha256: f0ecf6e6eb955193ca60af2d5ca39565a86b8a142452c5b24d96fb477428f4d2
       url: "https://pub.dev"
     source: hosted
-    version: "8.1.4"
+    version: "8.1.5"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -94,15 +94,15 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.1.1"
+    version: "1.4.0"
   go_router:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "7ecb2f391edbca5473db591b48555a8912dde60edd0fb3013bd6743033b2d3f8"
+      sha256: "466425a64508ca00983882f523400d9169365cb9b464e2e2419f3b6545ff9c51"
       url: "https://pub.dev"
     source: hosted
-    version: "13.2.1"
+    version: "14.0.1"
   leak_tracker:
     dependency: transitive
     description:

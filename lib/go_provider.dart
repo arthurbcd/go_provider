@@ -86,6 +86,36 @@ class ShellProviderRoute extends ShellRoute {
   }
 }
 
+class ShellfulProviderRoute extends ShellfulRoute {
+  ShellfulProviderRoute({
+    required super.routes,
+    required List<SingleChildWidget> providers,
+    StatefulShellRouteBuilder? builder,
+    super.parentNavigatorKey,
+    super.restorationScopeId,
+  }) : super(
+          builder: (context, state, child) {
+            return Nested(
+              children: providers,
+              child: builder?.call(context, state, child) ?? child,
+            );
+          },
+        );
+}
+
+class ShellfulRoute extends StatefulShellRoute {
+  ShellfulRoute({
+    required List<RouteBase> routes,
+    super.builder,
+    super.pageBuilder,
+    super.parentNavigatorKey,
+    super.restorationScopeId,
+  }) : super.indexedStack(
+          branches:
+              routes.map((e) => StatefulShellBranch(routes: [e])).toList(),
+        );
+}
+
 class _InheritObservers extends NavigatorObserver {
   List<NavigatorObserver> get observers {
     final state = navigator?.context.findAncestorStateOfType<NavigatorState>();

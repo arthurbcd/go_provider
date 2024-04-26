@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+
+- Bump `go_router` to 14.0.0.
+- Added `ShellfulRoute` and `ShellfulProviderRoute` versions of `StatefulShellRoute.indexedStack`.
+
 ## 1.4.0
 
 - Fixed `GoProviderRoute` not being tracked in ancestor observers.
