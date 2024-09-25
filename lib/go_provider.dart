@@ -50,6 +50,7 @@ class ShellProviderRoute extends ShellRoute {
   ShellProviderRoute({
     required this.providers,
     required super.routes,
+    super.redirect,
     super.navigatorKey,
     super.observers,
     super.parentNavigatorKey,
@@ -91,6 +92,7 @@ class ShellfulProviderRoute extends ShellfulRoute {
     required super.routes,
     required List<SingleChildWidget> providers,
     StatefulShellRouteBuilder? builder,
+    super.redirect,
     super.parentNavigatorKey,
     super.restorationScopeId,
   }) : super(
@@ -106,6 +108,7 @@ class ShellfulProviderRoute extends ShellfulRoute {
 class ShellfulRoute extends StatefulShellRoute {
   ShellfulRoute({
     required List<RouteBase> routes,
+    super.redirect,
     super.builder,
     super.pageBuilder,
     super.parentNavigatorKey,

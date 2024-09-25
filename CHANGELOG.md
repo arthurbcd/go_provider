@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0
+
+- Adds route redirect to ShellProviderRoutes
+
 ## 1.5.0
 
 - Bump `go_router` to 14.0.0.
