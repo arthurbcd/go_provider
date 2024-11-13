@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+
+- Fixed `GoProviderRoute` not recreating it's providers when the same route is called again but with different path parameters.
+
 ## 1.6.0
 
 - Adds route redirect to ShellProviderRoutes

@@ -1,6 +1,6 @@
 name: go_provider
 description: "Easily scope providers to routes with GoProviderRoute and ShellProviderRoute."
-version: 1.6.0
+version: 1.6.1
 homepage: https://www.bravier.com
 repository: https://github.com/arthurbcd/go_provider.git
 topics:

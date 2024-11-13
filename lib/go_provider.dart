@@ -62,8 +62,17 @@ class ShellProviderRoute extends ShellRoute {
   /// A list of providers to be nested in the route.
   final List<SingleChildWidget> providers;
 
-  Widget _nest(Widget child) {
+  Widget _nest(GoRouterState state, Widget child) {
     return Nested(
+      key: () {
+        if (this is! GoProviderRoute) return null;
+
+        final route = routes.first as GoRoute;
+        // we recreate when any parameter this route depends on changes.
+        // ignore: invalid_use_of_internal_member
+        final values = route.pathParameters.map((k) => state.pathParameters[k]);
+        return Key(values.toString());
+      }(),
       children: providers,
       child: child,
     );
@@ -74,16 +83,19 @@ class ShellProviderRoute extends ShellRoute {
     if (pageBuilder != null) return null;
 
     final widget = super.buildWidget(context, state, shellRouteContext);
-    if (widget != null) return _nest(widget);
+    if (widget != null) return _nest(state, widget);
 
     return _nest(
+      state,
       shellRouteContext.navigatorBuilder(observers, restorationScopeId),
     );
   }
 
   @override
   Page<dynamic>? buildPage(context, state, shellRouteContext) {
-    return super.buildPage(context, state, shellRouteContext)?.nest(_nest);
+    return super
+        .buildPage(context, state, shellRouteContext)
+        ?.nest((child) => _nest(state, child));
   }
 }
 
