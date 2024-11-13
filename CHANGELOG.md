@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.0
+
+- Added preload support to `ShellfulRoute`.
+- Update `ShellRouteContext.navigatorBuilder` signature.
+- Update `go_router` constraints to '>=14.5.0 <15.0.0'.
+
 ## 1.6.1
 
 - Fixed `GoProviderRoute` not recreating it's providers when the same route is called again but with different path parameters.
@@ -10,7 +16,7 @@
 
 ## 1.5.0
 
-- Bump `go_router` to 14.0.0.
+- Update `go_router` to '>=14.0.0 <15.0.0'.
 - Added `ShellfulRoute` and `ShellfulProviderRoute` versions of `StatefulShellRoute.indexedStack`.
 
 ## 1.4.0
@@ -21,7 +27,7 @@
 ## 1.3.0
 
 - Added support to consuming declared providers directly in `ShellProviderRoute` builders in addition to it's routes.
-- Changed go_router constraints to '>=10.2.0 <14.0.0' for `onExit` full compability.
+- Update `go_router` constraints to '>=10.2.0 <14.0.0' for `onExit` full compability.
 
 ## 1.2.0
 

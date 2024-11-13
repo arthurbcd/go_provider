@@ -82,20 +82,29 @@ class ShellProviderRoute extends ShellRoute {
   Widget? buildWidget(context, state, shellRouteContext) {
     if (pageBuilder != null) return null;
 
-    final widget = super.buildWidget(context, state, shellRouteContext);
-    if (widget != null) return _nest(state, widget);
+    var widget = super.buildWidget(context, state, shellRouteContext);
+    widget ??= shellRouteContext.build(observers, restorationScopeId);
 
-    return _nest(
-      state,
-      shellRouteContext.navigatorBuilder(observers, restorationScopeId),
-    );
+    return _nest(state, widget);
   }
 
   @override
   Page<dynamic>? buildPage(context, state, shellRouteContext) {
-    return super
-        .buildPage(context, state, shellRouteContext)
-        ?.nest((child) => _nest(state, child));
+    final page = super.buildPage(context, state, shellRouteContext);
+
+    return page?.nest((child) => _nest(state, child));
+  }
+}
+
+extension on ShellRouteContext {
+  Widget build(List<NavigatorObserver>? observers, String? restorationScopeId) {
+    return navigatorBuilder(
+      navigatorKey,
+      match,
+      routeMatchList,
+      observers,
+      restorationScopeId,
+    );
   }
 }
 
@@ -107,6 +116,7 @@ class ShellfulProviderRoute extends ShellfulRoute {
     super.redirect,
     super.parentNavigatorKey,
     super.restorationScopeId,
+    super.preload,
   }) : super(
           builder: (context, state, child) {
             return Nested(
@@ -125,9 +135,15 @@ class ShellfulRoute extends StatefulShellRoute {
     super.pageBuilder,
     super.parentNavigatorKey,
     super.restorationScopeId,
+    bool preload = false,
   }) : super.indexedStack(
-          branches:
-              routes.map((e) => StatefulShellBranch(routes: [e])).toList(),
+          branches: [
+            for (final route in routes)
+              StatefulShellBranch(
+                routes: [route],
+                preload: preload,
+              )
+          ],
         );
 }
 
