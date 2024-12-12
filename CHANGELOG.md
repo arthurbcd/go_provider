@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0
+
+- Expose `GoProviderRoute.shellBuilder/shellPageBuilder`.
+- Fix `GoProviderRoute.parentNavigatorKey` losing provider scope.
+- Fix `Page` builders to correctly apply `Page.canPop/onPopInvoked`.
+- Bump to sdk `3.0.0`.
+
 ## 1.7.0
 
 - Added preload support to `ShellfulRoute`.
@@ -12,11 +19,11 @@
 
 ## 1.6.0
 
-- Adds route redirect to ShellProviderRoutes
+- Added `ShellProviderRoute.redirect`.
 
 ## 1.5.0
 
-- Update `go_router` to '>=14.0.0 <15.0.0'.
+- Bump `go_router` to '>=14.0.0 <15.0.0'.
 - Added `ShellfulRoute` and `ShellfulProviderRoute` versions of `StatefulShellRoute.indexedStack`.
 
 ## 1.4.0
@@ -27,7 +34,7 @@
 ## 1.3.0
 
 - Added support to consuming declared providers directly in `ShellProviderRoute` builders in addition to it's routes.
-- Update `go_router` constraints to '>=10.2.0 <14.0.0' for `onExit` full compability.
+- Bump `go_router` constraints to '>=10.2.0 <14.0.0' for `onExit` full compability.
 
 ## 1.2.0
 

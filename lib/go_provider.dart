@@ -16,10 +16,12 @@ class GoProviderRoute extends ShellProviderRoute {
     String? name,
     GoRouterWidgetBuilder? builder,
     GoRouterPageBuilder? pageBuilder,
-    GlobalKey<NavigatorState>? parentNavigatorKey,
     GoRouterRedirect? redirect,
     ExitCallback? onExit,
     List<RouteBase> routes = const [],
+    super.parentNavigatorKey,
+    ShellRouteBuilder? shellBuilder,
+    ShellRoutePageBuilder? shellPageBuilder,
   }) : super(
           routes: [
             GoRoute(
@@ -27,17 +29,19 @@ class GoProviderRoute extends ShellProviderRoute {
               name: name,
               builder: builder,
               pageBuilder: pageBuilder,
-              parentNavigatorKey: parentNavigatorKey,
               redirect: redirect,
               onExit: onExit,
               routes: routes,
             ),
           ],
-          pageBuilder: pageBuilder != null
-              ? (context, state, child) {
-                  return pageBuilder(context, state).nest((_) => child);
-                }
-              : null,
+          builder: shellBuilder,
+          pageBuilder: switch ((pageBuilder, shellPageBuilder)) {
+            (null, null) => null,
+            (_, var builder?) => builder,
+            (var builder?, _) => (context, state, child) {
+                return builder(context, state).nest((_) => child);
+              },
+          },
           observers: [_InheritObservers()],
         );
 }
@@ -89,7 +93,7 @@ class ShellProviderRoute extends ShellRoute {
   }
 
   @override
-  Page<dynamic>? buildPage(context, state, shellRouteContext) {
+  Page? buildPage(context, state, shellRouteContext) {
     final page = super.buildPage(context, state, shellRouteContext);
 
     return page?.nest((child) => _nest(state, child));
@@ -198,57 +202,53 @@ class _InheritObservers extends NavigatorObserver {
 
 extension on Page {
   Page nest(Widget Function(Widget child) nester) {
-    final page = this;
-
-    if (page is CupertinoPage) {
-      return CupertinoPage(
-        key: page.key,
-        name: page.name,
-        arguments: page.arguments,
-        allowSnapshotting: page.allowSnapshotting,
-        fullscreenDialog: page.fullscreenDialog,
-        maintainState: page.maintainState,
-        restorationId: page.restorationId,
-        title: page.title,
-        child: nester(page.child),
-      );
-    }
-
-    if (page is MaterialPage) {
-      return MaterialPage(
-        key: page.key,
-        name: page.name,
-        arguments: page.arguments,
-        allowSnapshotting: page.allowSnapshotting,
-        fullscreenDialog: page.fullscreenDialog,
-        maintainState: page.maintainState,
-        restorationId: page.restorationId,
-        child: nester(page.child),
-      );
-    }
-
-    if (page is CustomTransitionPage) {
-      return CustomTransitionPage(
-        key: page.key,
-        name: page.name,
-        arguments: page.arguments,
-        opaque: page.opaque,
-        restorationId: page.restorationId,
-        maintainState: page.maintainState,
-        fullscreenDialog: page.fullscreenDialog,
-        barrierDismissible: page.barrierDismissible,
-        barrierColor: page.barrierColor,
-        barrierLabel: page.barrierLabel,
-        transitionsBuilder: page.transitionsBuilder,
-        transitionDuration: page.transitionDuration,
-        reverseTransitionDuration: page.reverseTransitionDuration,
-        child: nester(page.child),
-      );
-    }
-
-    throw GoError('Could not build page from route: $page'
-        ''
-        'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage.');
+    return switch (this) {
+      CupertinoPage page => CupertinoPage(
+          key: page.key,
+          name: page.name,
+          arguments: page.arguments,
+          allowSnapshotting: page.allowSnapshotting,
+          fullscreenDialog: page.fullscreenDialog,
+          maintainState: page.maintainState,
+          restorationId: page.restorationId,
+          title: page.title,
+          canPop: page.canPop,
+          onPopInvoked: page.onPopInvoked,
+          child: nester(page.child),
+        ),
+      MaterialPage page => MaterialPage(
+          key: page.key,
+          name: page.name,
+          arguments: page.arguments,
+          allowSnapshotting: page.allowSnapshotting,
+          fullscreenDialog: page.fullscreenDialog,
+          maintainState: page.maintainState,
+          restorationId: page.restorationId,
+          canPop: page.canPop,
+          onPopInvoked: page.onPopInvoked,
+          child: nester(page.child),
+        ),
+      CustomTransitionPage page => CustomTransitionPage(
+          key: page.key,
+          name: page.name,
+          arguments: page.arguments,
+          opaque: page.opaque,
+          restorationId: page.restorationId,
+          maintainState: page.maintainState,
+          fullscreenDialog: page.fullscreenDialog,
+          barrierDismissible: page.barrierDismissible,
+          barrierColor: page.barrierColor,
+          barrierLabel: page.barrierLabel,
+          transitionsBuilder: page.transitionsBuilder,
+          transitionDuration: page.transitionDuration,
+          reverseTransitionDuration: page.reverseTransitionDuration,
+          child: nester(page.child),
+        ),
+      _ => throw GoError(
+          'Could not build page from route: $this \n'
+          'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage.',
+        ),
+    };
   }
 }
 
@@ -256,7 +256,6 @@ extension on Page {
 /// current route's fullscreenDialog property.
 class GoPopButton extends StatelessWidget {
   const GoPopButton({super.key, this.color, this.style, this.onPressed});
-
   final Color? color;
   final ButtonStyle? style;
   final VoidCallback? onPressed;
