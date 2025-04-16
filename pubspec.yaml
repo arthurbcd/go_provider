@@ -16,7 +16,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  go_router: '>=14.5.0 <15.0.0'
+  go_router: '>=14.5.0 <=15.5.0'
   nested: ^1.0.0
 
 dev_dependencies:
