@@ -4,6 +4,8 @@
 
 - Bump `go_router` to '>=14.5.0 <17.0.0'.
 
+Thanks to `fabionuno` !
+
 ## 1.8.1
 
 - Bump `go_router` to '>=14.5.0 <16.0.0'.
