@@ -64,7 +64,7 @@ class ShellProviderRoute extends ShellRoute {
   });
 
   /// A list of providers to be nested in the route.
-  final List<SingleChildWidget> providers;
+  final List<SingleChildWidget> Function(GoRouterState state) providers;
 
   Widget _nest(GoRouterState state, Widget child) {
     return Nested(
@@ -77,7 +77,7 @@ class ShellProviderRoute extends ShellRoute {
         final values = route.pathParameters.map((k) => state.pathParameters[k]);
         return Key(values.toString());
       }(),
-      children: providers,
+      children: providers(state),
       child: child,
     );
   }
