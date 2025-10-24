@@ -15,7 +15,8 @@ final goRouter = GoRouter(
   routes: [
     GoProviderRoute(
       path: '/',
-      providers: (state) => [ // ✅ can access GoRouterState
+      providers: (context, state) => [
+        // ✅ can access GoRouterState
         BlocProvider(create: (_) => BlocCubit()),
       ],
       builder: (context, state) => const PageA(), // ✅ can access BlocCubit
