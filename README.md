@@ -42,7 +42,7 @@ routes: [
   ),
   GoProviderRoute(
     path: '/home',
-    providers: [
+    providers: (state) => [
       ChangeNotifierProvider(create: (_) => UserState()), // or BlocProvider
     ],
     builder: (context, state) => const HomePage(), // ✅ can access UserState
@@ -61,7 +61,7 @@ routes: [
 ```dart
 routes: [
   ShellProviderRoute(
-    providers: [
+    providers: (state) => [
       ChangeNotifierProvider(create: (_) => FooState()), // or BlocProvider
     ],
     builder: (context, state, child) => ShellPage(child: child), // ✅ can access FooState
