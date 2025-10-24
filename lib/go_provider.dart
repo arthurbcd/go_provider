@@ -64,9 +64,12 @@ class ShellProviderRoute extends ShellRoute {
   });
 
   /// A list of providers to be nested in the route.
-  final List<SingleChildWidget> Function(GoRouterState state) providers;
+  final List<SingleChildWidget> Function(
+    BuildContext context,
+    GoRouterState state,
+  ) providers;
 
-  Widget _nest(GoRouterState state, Widget child) {
+  Widget _nest(BuildContext context, GoRouterState state, Widget child) {
     return Nested(
       key: () {
         if (this is! GoProviderRoute) return null;
@@ -77,7 +80,7 @@ class ShellProviderRoute extends ShellRoute {
         final values = route.pathParameters.map((k) => state.pathParameters[k]);
         return Key(values.toString());
       }(),
-      children: providers(state),
+      children: providers(context, state),
       child: child,
     );
   }
@@ -86,17 +89,19 @@ class ShellProviderRoute extends ShellRoute {
   Widget? buildWidget(context, state, shellRouteContext) {
     if (pageBuilder != null) return null;
 
-    var widget = super.buildWidget(context, state, shellRouteContext);
-    widget ??= shellRouteContext.build(observers, restorationScopeId);
+    final child = Builder(builder: (context) {
+      return super.buildWidget(context, state, shellRouteContext) ??
+          shellRouteContext.build(observers, restorationScopeId);
+    });
 
-    return _nest(state, widget);
+    return _nest(context, state, child);
   }
 
   @override
   Page? buildPage(context, state, shellRouteContext) {
     final page = super.buildPage(context, state, shellRouteContext);
 
-    return page?.nest((child) => _nest(state, child));
+    return page?.nest((child) => _nest(context, state, child));
   }
 }
 
@@ -244,10 +249,19 @@ extension on Page {
           reverseTransitionDuration: page.reverseTransitionDuration,
           child: nester(page.child),
         ),
-      _ => throw GoError(
-          'Could not build page from route: $this \n'
-          'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage.',
-        ),
+      _ => () {
+          try {
+            dynamic page = this;
+            return page.copyWith(
+              child: nester(page.child),
+            );
+          } catch (_) {}
+          throw GoError(
+            'Could not build page from route: $this \n'
+            'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage. \n'
+            'Or implement a copyWith({Widget? child}) method in your custom Page class.',
+          );
+        }(),
     };
   }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0
+
+- Breaking: Changed `providers` to a callback with `BuildContext` & `GoRouterState`.
+- Updated `GoProviderRouter.shellBuilder` & `ShellProviderRouter.builder` to callback a `BuildContext` that can access it's route `providers`.
+- Added support for custom `Page`s with `copyWith` in route `pageBuilder`.
+
+Thanks to `dmallo97` & `SPiercer` !
+
 ## 1.8.2
 
 - Bump `go_router` to '>=14.5.0 <17.0.0'.

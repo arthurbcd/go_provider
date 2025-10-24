@@ -42,7 +42,7 @@ routes: [
   ),
   GoProviderRoute(
     path: '/home',
-    providers: (state) => [
+    providers: (context, state) => [ // GoRouterState
       ChangeNotifierProvider(create: (_) => UserState()), // or BlocProvider
     ],
     builder: (context, state) => const HomePage(), // ✅ can access UserState
@@ -61,7 +61,7 @@ routes: [
 ```dart
 routes: [
   ShellProviderRoute(
-    providers: (state) => [
+    providers: (context, state) => [
       ChangeNotifierProvider(create: (_) => FooState()), // or BlocProvider
     ],
     builder: (context, state, child) => ShellPage(child: child), // ✅ can access FooState
@@ -81,6 +81,8 @@ routes: [
 
 ## Issues
 
+### Navigator.pop
+
 Since `GoProviderRoute` has its own `Navigator`, the canPop method will always return false. This means that the implicit back/close button wont show up. This a known issue when using `ShellRoute` routes:
 <https://github.com/flutter/flutter/issues/144687>
 
@@ -91,6 +93,12 @@ GoPopButton(), // CloseButton/BackButton that pops the current route (like AppBa
 ```
 
 > Also prefer using `context.pop` instead of `Navigator.pop` inside `GoProviderRoute` routes.
+
+### Custom `Page`
+
+By default `pageBuilder` is only compatible with `MaterialPage`, `CupertinoPage` and `CustomTransitionPage`. Any custom `Page` that doesn't implement or extend those, will throw an exception when trying to nest providers.
+
+For a `CustomPage`, you can implement `CustomPage.copyWith({Widget? child})` so go_provider can use it's child to nest providers.
 
 ## Contribution
 
