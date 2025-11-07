@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- Bump `go_router` to '>=14.5.0 <18.0.0'.
+
 ## 2.0.0
 
 - Breaking: Changed `providers` to a callback with `BuildContext` & `GoRouterState`.

@@ -42,8 +42,11 @@ class GoProviderRoute extends ShellProviderRoute {
                 return builder(context, state).nest((_) => child);
               },
           },
-          observers: [_InheritObservers()],
+          observers: hasNotifyRootObserver ? null : [_NotifyObservers()],
         );
+
+  static final bool hasNotifyRootObserver =
+      ShellRoute.new.runtimeType.toString().contains('notifyRootObserver');
 }
 
 /// A class that mimics [ShellRoute], but with additional support for scoped providers.
@@ -156,7 +159,7 @@ class ShellfulRoute extends StatefulShellRoute {
         );
 }
 
-class _InheritObservers extends NavigatorObserver {
+class _NotifyObservers extends NavigatorObserver {
   List<NavigatorObserver> get observers {
     final state = navigator?.context.findAncestorStateOfType<NavigatorState>();
     return state?.widget.observers ?? [];
