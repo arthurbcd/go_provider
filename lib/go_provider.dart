@@ -208,8 +208,24 @@ class _NotifyObservers extends NavigatorObserver {
   }
 }
 
+/// Interface for custom [Page] subclasses used with [GoProviderRoute] /
+/// [ShellProviderRoute].
+///
+/// Implement [copyWithChild] so provider nesting can wrap the page content
+/// while preserving route transitions.
+abstract interface class PageWithChild {
+  Widget get pageChild;
+
+  Page copyWithChild(Widget child);
+}
+
 extension on Page {
   Page nest(Widget Function(Widget child) nester) {
+    if (this is PageWithChild) {
+      final nestable = this as PageWithChild;
+      return nestable.copyWithChild(nester(nestable.pageChild));
+    }
+
     return switch (this) {
       CupertinoPage page => CupertinoPage(
           key: page.key,
@@ -252,20 +268,31 @@ extension on Page {
           reverseTransitionDuration: page.reverseTransitionDuration,
           child: nester(page.child),
         ),
-      _ => () {
-          try {
-            dynamic page = this;
-            return page.copyWith(
-              child: nester(page.child),
-            );
-          } catch (_) {}
-          throw GoError(
-            'Could not build page from route: $this \n'
-            'Please make sure the page extends a MaterialPage, CupertinoPage, or CustomTransitionPage. \n'
-            'Or implement a copyWith({Widget? child}) method in your custom Page class.',
-          );
-        }(),
+      _ => _nestCustomPage(nester),
     };
+  }
+
+  Page _nestCustomPage(Widget Function(Widget child) nester) {
+    final page = this;
+
+    try {
+      final dynamic dynamicPage = page;
+      final child = dynamicPage.child;
+      if (child is Widget) {
+        final nested = nester(child);
+        final result = dynamicPage.copyWith(child: nested);
+        if (result is Page) return result;
+      }
+    } on NoSuchMethodError {
+      // copyWith or child getter is missing — fall through to the error below.
+    } catch (_) {}
+
+    throw GoError(
+      'Could not nest providers in page: $page (${page.runtimeType}).\n'
+      'Use MaterialPage, CupertinoPage, CustomTransitionPage, or NoTransitionPage, '
+      'or implement copyWith({Widget? child}) / the PageWithChild mixin on your '
+      'custom Page class.',
+    );
   }
 }
 
