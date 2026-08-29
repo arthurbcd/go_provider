@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2
+
+- Bump `go_router` to '>=14.5.0 <19.0.0'.
+
+
 ## 2.0.1
 
 - Bump `go_router` to '>=14.5.0 <18.0.0'.
