@@ -4,6 +4,7 @@
 
 - Bump `go_router` to '>=14.5.0 <19.0.0'.
 
+Thanks to `fabionuno` !
 
 ## 2.0.1
 
